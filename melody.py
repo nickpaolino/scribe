@@ -4,7 +4,7 @@ from music21 import *
 
 class Melody(object):
     notes = "C C# D D# E F F# G G# A A# B".split() * 2
-    with open('/Users/nicholaspaolino/Desktop/Scribe/Data/scales.json') as f:
+    with open('https://github.com/nickpaolino/scribe/Data/scales.json') as f:
         scales = json.load(f)
     def __init__(self):
         return None
