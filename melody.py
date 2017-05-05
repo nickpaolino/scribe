@@ -11,7 +11,7 @@ def read_scale(scale_type, key):
     h, w, m = 1, 2, 3
 
     # Reads scale from json file that defines the scale's succession of intervals
-    with open('/Users/nicholaspaolino/github/scribe/Data/scales.json') as f:
+    with open('/Users/nicholaspaolino/github/scribe/scales.json') as f:
         scales = json.load(f)
 
     # The key range is the chromatic range starting at the key note
@@ -28,21 +28,28 @@ def read_scale(scale_type, key):
     return [x for x, y in zip(key_range, scale_vector) if y == 0]
 
 def generate_melody(number):
-    melody = stream.Stream() # Define music21 stream
+    number_of_notes = [0]*number
+
+    notes = [random.choice(read_scale("major", "A")) for n in number_of_notes]
 
     # Creates a list of the requested amount of random notes from the scale - variables currently set default
-    scale_material = [random.choice(read_scale("pentatonic","A")) + random.choice(["4","5"]) for n in [0]*number]
+    melodic_material = [note + random.choice(["4","5"]) for note in notes]
 
     # Shuffles the randomized notes
-    random.shuffle(scale_material)
+    random.shuffle(melodic_material)
+
+    # Returns the generated melody as a list of tuples including the note type and duration
+    return [(pitch, generate_rhythm()) for pitch, duration in zip(melodic_material, range(number))]
+def play_melody():
+    melody = stream.Stream() # Defines the music21 stream
 
     # Creates the melody by appending the random sequence of notes it to the music21 stream
-    melody.append([note.Note(x, type = generate_rhythm()) for x in scale])
-    return melody
+    melody.append([note.Note(pitch, type = duration) for pitch, duration in generate_melody(20)])
 
+    return melody # Returns the music21 stream
 def generate_rhythm():
     # Defines basic rhythmic units through the music21 library
-    rhythmic_units = ['whole','half','quarter','eighth']
+    rhythmic_units = ['whole','half','quarter']
     return random.choice(rhythmic_units)
 
 def interpret_stream(stream):
@@ -60,6 +67,6 @@ def write_midi(stream):
 
     # Writes midi file to save the melody
     mf = midi.translate.streamToMidiFile(stream)
-    mf.open('/Melody'+'/midi'+str(random.randint(1, 1000))+'.mid','wb')
+    mf.open('/Users/nicholaspaolino/Desktop/Melodies'+'/midi'+str(random.randint(1, 1000))+'.mid','wb')
     mf.write()
     mf.close()
